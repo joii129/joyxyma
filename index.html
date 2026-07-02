@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Joy Ma</title>
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--bg:#F5F3EF;--ink:#1C1C1A;--mid:#8A8880;--rule:#E0DDD8;}
@@ -15,19 +15,19 @@ body{
   background-image:
     linear-gradient(rgba(245,243,239,0.35), rgba(245,243,239,0.35)),
     url('wall.jpeg');
-  background-size:auto, 150%;
+  background-size:auto, 105%;
   background-position:center, 47% 10%;
   background-attachment:fixed;
   position:relative;
 }
 .canvas{z-index:1}
 nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:28px 40px;}
-.nav-name{font-family:'EB Garamond',serif;font-size:17px;color:var(--ink);text-decoration:none;letter-spacing:0.01em}
+.nav-name{font-family:'Fraunces',serif;font-optical-sizing:auto;font-weight:700;font-size:47px;color:#E8E3D8;text-decoration:none;letter-spacing:0.01em;text-shadow:2px 2px 0 #46453f,4px 4px 0 #52504a,6px 6px 0 #5e5c55,8px 8px 0 #6a6860,9px 9px 14px rgba(28,28,26,0.35);}
 .nav-links{display:flex;gap:32px;list-style:none}
 .nav-links a{font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--mid);text-decoration:none;transition:color 0.2s}
 .nav-links a:hover{color:var(--ink)}
 .canvas{width:100vw;height:100vh;position:relative;overflow:hidden;cursor:default;}
-.object{position:absolute;z-index:5;display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer;transition:transform 0.4s cubic-bezier(0.25,0.46,0.45,0.94),opacity 0.6s ease;user-select:none;opacity:0;}
+.object{position:absolute;z-index:5;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;transition:transform 0.4s cubic-bezier(0.25,0.46,0.45,0.94),opacity 0.6s ease;user-select:none;opacity:0;}
 .object.in{opacity:1}
 .object:hover{z-index:50}
 .object:hover .obj-placeholder{filter:drop-shadow(0 10px 18px rgba(28,28,26,0.28))}
@@ -67,7 +67,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content
 </head>
 <body>
 <nav>
-  <a href="#" class="nav-name">Joy Ma</a>
+  <a href="#" class="nav-name">Joy Xinyi Ma</a>
   <ul class="nav-links">
     <li><a href="#" onclick="closeProject();return false;">Work</a></li>
     <li><a href="mailto:joyxyma@gmail.com">Contact</a></li>
