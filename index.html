@@ -78,9 +78,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content
 <button class="reset-view" id="resetView">Reset View</button>
 <div class="project-overlay" id="overlay">
   <button class="project-close" onclick="closeProject()">Close</button>
-  <div class="project-media" id="overlay-media">
-    <div class="project-media-placeholder" id="overlay-placeholder"></div>
-  </div>
+  <div class="project-media" id="overlay-media"></div>
   <div class="project-info">
     <p class="project-tag" id="overlay-tag"></p>
     <h2 class="project-title" id="overlay-title"></h2>
@@ -93,7 +91,7 @@ const projects = [
   {id:"shinsegae",label:"Shinsegae Daegu",tag:"Retail",title:"Shinsegae Daegu",meta:[{l:"Location",v:"Daegu, Korea"},{l:"Size",v:"~10,000 sq ft"},{l:"Year",v:"2025"},{l:"With",v:"Snarkitecture"}],desc:"Full-phase retail renovation for Shinsegae's Daegu location. Scope included complete layout overhaul, new concept and brand narrative, custom millwork, installations, and design for Shinsegae's in-house brand Casestudy, with a focus on attracting a younger, experience-driven demographic.",color:"#C97B5A",w:190,h:230},
   {id:"hacienda",label:"Hacienda Residence",tag:"Residential",title:"Hacienda Residence",meta:[{l:"Location",v:"Arcadia, CA"},{l:"Size",v:"~8,000 sq ft"},{l:"Status",v:"Under Construction"},{l:"With",v:"PlayFlo"}],desc:"Ground-up residential project. Served as project lead and manager across all design phases. Currently under construction with construction administration ongoing.",color:"#8C9A7B",w:165,h:200},
   {id:"greenfield",label:"Greenfield Residence",tag:"Residential",title:"Greenfield Residence",meta:[{l:"Location",v:"Arcadia, CA"},{l:"Size",v:"~7,000 sq ft"},{l:"Status",v:"Entering Construction"},{l:"With",v:"PlayFlo"}],desc:"Ground-up residential project led across all design phases through bidding. Currently moving into construction with construction administration to follow.",color:"#7C93A3",w:155,h:190},
-  {id:"steep",label:"Steep LA",tag:"Hospitality",title:"Steep LA",meta:[{l:"Location",v:"Los Angeles"},{l:"Type",v:"Teahouse / Bar"},{l:"Year",v:"2024"},{l:"With",v:"PlayFlo"}],desc:"Interior upgrades for the award-winning teahouse and cocktail bar, including custom millwork, seating, bar layouts, and equipment. Provided on-site creative direction through installation.",color:"#B5654A",w:145,h:170},
+  {id:"steep",label:"Steep LA",tag:"Hospitality",title:"Steep LA",meta:[{l:"Location",v:"Los Angeles"},{l:"Type",v:"Teahouse / Bar"},{l:"Year",v:"2024"},{l:"With",v:"PlayFlo"}],desc:"Interior upgrades for the award-winning teahouse and cocktail bar, including custom millwork, seating, bar layouts, and equipment. Provided on-site creative direction through installation.",color:"#B5654A",w:145,h:170,img:"steepla-icon.png"},
   {id:"glowbar",label:"GlowBar HQ",tag:"Office",title:"GlowBar HQ",meta:[{l:"Location",v:"New York, NY"},{l:"Type",v:"Office HQ"},{l:"Year",v:"2023"},{l:"With",v:"PlayFlo"}],desc:"Schematic layouts and custom millwork designs for GlowBar's NYC office headquarters. Managed FF&E selection and construction detailing.",color:"#6E7A85",w:140,h:165},
   {id:"brooklyn",label:"Brooklyn Heights Condo",tag:"Residential",title:"Brooklyn Heights Condo",meta:[{l:"Location",v:"New York, NY"},{l:"Type",v:"Renovation"},{l:"Year",v:"2023"},{l:"With",v:"PlayFlo"}],desc:"Design lead from layout planning through custom millwork, material selection, finishes, FF&E packages, and 3D visualization. Collaborated with architect of record, vendors, and contractors.",color:"#C79B92",w:150,h:180},
   {id:"shenzhen",label:"Shenzhen Universiade",tag:"Civic",title:"Shenzhen Universiade Sports Centre",meta:[{l:"Location",v:"Shenzhen, China"},{l:"Type",v:"Civic / Exhibition"},{l:"Year",v:"2023"},{l:"With",v:"PlayFlo"}],desc:"Design lead for community and visitor centers at the Shenzhen Universiade Sports Centre. Managed client relations and coordination with local architects for specification packages and construction documents.",color:"#8A8C5E",w:170,h:200},
@@ -142,6 +140,35 @@ doodles.forEach(d=>{
   canvas.appendChild(el);
 });
 
+function renderMedia(container, p, isOverlay){
+  const icon = icons[p.tag] || icons.Residential;
+  container.innerHTML = '';
+  container.style.background = '';
+  container.style.padding = '';
+  if(p.img){
+    const img = document.createElement('img');
+    img.src = p.img;
+    img.alt = p.title || p.label;
+    img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;'+(isOverlay?'':'border-radius:2px;');
+    img.addEventListener('error', ()=>{
+      if(isOverlay){
+        container.style.background = p.color;
+        container.innerHTML = `<div class="project-media-placeholder">${p.title} — Add images here</div>`;
+      } else {
+        container.style.padding = '';
+        container.innerHTML = icon;
+      }
+    });
+    container.style.padding = '0';
+    container.appendChild(img);
+  } else if(isOverlay){
+    container.style.background = p.color;
+    container.innerHTML = `<div class="project-media-placeholder">${p.title} — Add images here</div>`;
+  } else {
+    container.innerHTML = icon;
+  }
+}
+
 projects.forEach((p,i) => {
   const pos = positions[i];
   const el = document.createElement('div');
@@ -149,8 +176,8 @@ projects.forEach((p,i) => {
   const w = Math.round(p.w*scale), h = Math.round(p.h*scale);
   el.style.cssText = `left:${pos.x}%;top:${pos.y}%;width:${w}px;height:${h}px;transform:rotate(${pos.r}deg)`;
   el.dataset.rotate = pos.r;
-  const icon = icons[p.tag] || icons.Residential;
-  el.innerHTML = `<span class="obj-pin"></span><div class="obj-placeholder" style="color:${p.color}">${icon}</div><span class="obj-label">${p.label}</span>`;
+  el.innerHTML = `<span class="obj-pin"></span><div class="obj-placeholder" style="color:${p.color}"></div><span class="obj-label">${p.label}</span>`;
+  renderMedia(el.querySelector('.obj-placeholder'), p, false);
   el.addEventListener('click',()=>openProject(p));
   canvas.appendChild(el);
   setTimeout(()=>el.classList.add('in'), 80*i);
@@ -160,8 +187,7 @@ function openProject(p){
   document.getElementById('overlay-tag').textContent=p.tag;
   document.getElementById('overlay-title').textContent=p.title;
   document.getElementById('overlay-desc').textContent=p.desc;
-  document.getElementById('overlay-placeholder').textContent=p.title+' — Add images here';
-  document.getElementById('overlay-media').style.background=p.color;
+  renderMedia(document.getElementById('overlay-media'), p, true);
   document.getElementById('overlay-meta').innerHTML=p.meta.map(m=>`<div class="project-meta-item"><label>${m.l}</label><p>${m.v}</p></div>`).join('');
   document.getElementById('overlay').classList.add('open');
 }
