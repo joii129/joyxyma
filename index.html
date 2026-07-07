@@ -61,8 +61,31 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content
   .project-overlay{flex-direction:column}
   .project-media{width:100%;height:45%}
   .project-info{width:100%;padding:40px 24px}
-  .intro{left:24px;bottom:24px}
-  .reset-view{right:24px;bottom:24px}
+  .intro{left:24px;bottom:12px;position:static;padding:16px 24px 0;text-align:center}
+  .reset-view{display:none}
+  html,body{overflow-y:auto;height:auto;}
+  .canvas{
+    width:100%;height:auto;min-height:auto;position:static;
+    display:grid;grid-template-columns:repeat(2,1fr);
+    gap:36px 20px;
+    padding:96px 24px 24px;
+    overflow:visible;
+  }
+  .object{
+    position:static !important;left:auto !important;top:auto !important;
+    width:auto !important;height:auto !important;
+    transform:none !important;
+  }
+  .obj-icon-wrap{
+    width:100% !important;height:auto !important;aspect-ratio:1/1;
+    transform:none !important;
+  }
+  .doodle{display:none}
+  .obj-label{
+    opacity:1 !important;transform:none !important;
+    position:static;background:none;border:none;padding:2px 0 0;
+    text-align:center;white-space:normal;
+  }
 }
 </style>
 </head>
@@ -197,9 +220,9 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeProject();});
 let dragging=false,startX,startY,curX=0,curY=0;
 const resetBtn = document.getElementById('resetView');
 
-function dragStart(x,y){dragging=true;startX=x-curX;startY=y-curY;canvas.style.cursor='grabbing';}
+function dragStart(x,y){if(isMobile)return;dragging=true;startX=x-curX;startY=y-curY;canvas.style.cursor='grabbing';}
 function dragMove(x,y){
-  if(!dragging)return;
+  if(!dragging||isMobile)return;
   curX=x-startX;curY=y-startY;
   canvas.style.transform=`translate(${curX}px,${curY}px)`;
   resetBtn.classList.toggle('show',Math.abs(curX)>20||Math.abs(curY)>20);
