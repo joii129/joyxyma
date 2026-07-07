@@ -38,14 +38,13 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content
 .reset-view{position:fixed;bottom:36px;right:40px;z-index:10;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--mid);background:none;border:1px solid var(--rule);border-radius:20px;padding:8px 16px;cursor:pointer;transition:all 0.2s;opacity:0;pointer-events:none;}
 .reset-view.show{opacity:1;pointer-events:all}
 .reset-view:hover{color:var(--ink);border-color:var(--ink)}
-.carousel-section{position:relative;z-index:2;background:var(--bg);padding:64px 0 100px;border-top:1px solid var(--rule);}
-.carousel-heading{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:var(--mid);text-align:center;margin-bottom:40px;}
-.carousel-track{display:flex;gap:28px;overflow-x:auto;padding:0 40px 24px;scroll-snap-type:x proximity;}
-.carousel-item{flex:0 0 auto;width:170px;scroll-snap-align:start;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:10px;transition:transform 0.3s ease;}
-.carousel-item:hover{transform:translateY(-4px)}
-.carousel-icon{width:170px;height:170px;}
-.carousel-label{font-size:12px;letter-spacing:0.04em;text-align:center;color:var(--ink);text-transform:uppercase;}
-.carousel-year{font-family:'Space Mono',monospace;font-size:10px;color:var(--mid);}
+.carousel-section{position:relative;z-index:2;background:var(--bg);border-top:1px solid var(--rule);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 24px;}
+.carousel-heading{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:var(--mid);text-align:center;margin-bottom:56px;}
+.slideshow{cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:20px;}
+.slide-icon-wrap{width:280px;height:280px;transition:opacity 0.4s ease;}
+.slide-label{font-size:16px;letter-spacing:0.05em;text-align:center;color:var(--ink);text-transform:uppercase;transition:opacity 0.4s ease;}
+.slide-year{font-family:'Space Mono',monospace;font-size:12px;color:var(--mid);transition:opacity 0.4s ease;}
+.slide-fade{opacity:0}
 .project-overlay{position:fixed;inset:0;z-index:200;background:var(--bg);display:flex;opacity:0;pointer-events:none;transition:opacity 0.45s ease;}
 .project-overlay.open{opacity:1;pointer-events:all}
 .project-media{width:58%;height:100%;background:#E8E4DC;display:flex;align-items:center;justify-content:center;overflow:hidden;}
@@ -91,8 +90,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content
     position:static;background:none;border:none;padding:2px 0 0;
     text-align:center;white-space:normal;
   }
-  .carousel-item{width:130px}
-  .carousel-icon{width:130px;height:130px;}
+  .slide-icon-wrap{width:200px;height:200px;}
 }
 </style>
 </head>
@@ -113,7 +111,11 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content
 <button class="reset-view" id="resetView">Reset View</button>
 <section class="carousel-section">
   <p class="carousel-heading">More Work</p>
-  <div class="carousel-track" id="carouselTrack"></div>
+  <div class="slideshow" id="slideshow">
+    <div class="slide-icon-wrap"><div class="obj-placeholder" id="slideIcon"></div></div>
+    <p class="slide-label" id="slideLabel"></p>
+    <p class="slide-year" id="slideYear"></p>
+  </div>
 </section>
 <div class="project-overlay" id="overlay">
   <button class="project-close" onclick="closeProject()">Close</button>
@@ -232,15 +234,35 @@ favorites.forEach((p,i) => {
   setTimeout(()=>el.classList.add('in'), 80*i);
 });
 
-const carouselTrack = document.getElementById('carouselTrack');
-moreWork.forEach(p=>{
-  const item = document.createElement('div');
-  item.className = 'carousel-item';
-  item.innerHTML = `<div class="carousel-icon"><div class="obj-placeholder" style="color:${p.color}"></div></div><span class="carousel-label">${p.label}</span><span class="carousel-year">${p.year}</span>`;
-  renderMedia(item.querySelector('.obj-placeholder'), p, false);
-  item.addEventListener('click',()=>openProject(p));
-  carouselTrack.appendChild(item);
-});
+const slideIcon = document.getElementById('slideIcon');
+const slideLabel = document.getElementById('slideLabel');
+const slideYear = document.getElementById('slideYear');
+const slideshowEl = document.getElementById('slideshow');
+let slideIndex = 0;
+
+function showSlide(i){
+  const p = moreWork[i];
+  const wrap = slideIcon.parentElement;
+  wrap.classList.add('slide-fade');
+  slideLabel.classList.add('slide-fade');
+  slideYear.classList.add('slide-fade');
+  setTimeout(()=>{
+    slideIcon.style.color = p.color;
+    renderMedia(slideIcon, p, false);
+    slideLabel.textContent = p.label;
+    slideYear.textContent = p.year;
+    wrap.classList.remove('slide-fade');
+    slideLabel.classList.remove('slide-fade');
+    slideYear.classList.remove('slide-fade');
+  }, 250);
+}
+
+slideshowEl.addEventListener('click', ()=>openProject(moreWork[slideIndex]));
+showSlide(slideIndex);
+setInterval(()=>{
+  slideIndex = (slideIndex+1) % moreWork.length;
+  showSlide(slideIndex);
+}, 2000);
 
 function openProject(p){
   document.getElementById('overlay-tag').textContent=p.tag;
