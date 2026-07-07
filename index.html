@@ -4,12 +4,13 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Joy Ma</title>
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400&family=Space+Grotesk:wght@500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--bg:#F5F3EF;--ink:#1C1C1A;--mid:#8A8880;--rule:#E0DDD8;}
-html,body{width:100%;height:100%;overflow:hidden}
+html{width:100%;}
 body{
+  width:100%;min-height:100vh;overflow-x:hidden;
   font-family:'DM Sans',sans-serif;font-weight:300;-webkit-font-smoothing:antialiased;
   background-color:var(--bg);
   background-image:
@@ -20,13 +21,13 @@ body{
   background-attachment:fixed;
   position:relative;
 }
-.canvas{z-index:1}
 nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:28px 40px;}
-.nav-name{font-family:'Fraunces',serif;font-optical-sizing:auto;font-weight:700;font-size:47px;color:#E8E3D8;text-decoration:none;letter-spacing:0.01em;text-shadow:2px 2px 0 #46453f,4px 4px 0 #52504a,6px 6px 0 #5e5c55,8px 8px 0 #6a6860,9px 9px 14px rgba(28,28,26,0.35);}
+.nav-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:26px;color:var(--ink);text-decoration:none;letter-spacing:0.01em;}
 .nav-links{display:flex;gap:32px;list-style:none}
 .nav-links a{font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--mid);text-decoration:none;transition:color 0.2s}
 .nav-links a:hover{color:var(--ink)}
-.canvas{width:100vw;height:100vh;position:relative;overflow:hidden;cursor:default;}
+.canvas{width:100vw;height:100vh;position:relative;overflow:hidden;cursor:default;z-index:1;}
+.scroll-cue{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);z-index:6;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--mid);pointer-events:none;text-align:center;}
 .object{position:absolute;z-index:5;display:flex;flex-direction:column;align-items:center;gap:0px;cursor:pointer;transition:opacity 0.6s ease;user-select:none;opacity:0;}
 .object.in{opacity:1}
 .object:hover{z-index:50}
@@ -39,7 +40,18 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content
 .obj-label{margin-bottom:-4px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--mid);white-space:nowrap;opacity:0;transform:translateY(-4px);transition:all 0.25s ease;background:var(--bg);padding:4px 10px;border-radius:20px;border:1px solid var(--rule);}
 .doodle{position:absolute;z-index:1;pointer-events:none;color:var(--mid);opacity:0.4;font-family:'EB Garamond',serif;font-style:italic;display:flex;align-items:center;justify-content:center;}
 .intro{position:fixed;bottom:36px;left:40px;z-index:10;pointer-events:none;}
-.intro p{font-family:'EB Garamond',serif;font-size:14px;color:var(--mid);font-style:italic;letter-spacing:0.02em}
+.intro p{font-family:'Space Mono',monospace;font-size:13px;color:var(--mid);letter-spacing:0.01em}
+.reset-view{position:fixed;bottom:36px;right:40px;z-index:10;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--mid);background:none;border:1px solid var(--rule);border-radius:20px;padding:8px 16px;cursor:pointer;transition:all 0.2s;opacity:0;pointer-events:none;}
+.reset-view.show{opacity:1;pointer-events:all}
+.reset-view:hover{color:var(--ink);border-color:var(--ink)}
+.carousel-section{position:relative;z-index:2;background:var(--bg);padding:64px 0 100px;border-top:1px solid var(--rule);}
+.carousel-heading{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:var(--mid);text-align:center;margin-bottom:40px;}
+.carousel-track{display:flex;gap:28px;overflow-x:auto;padding:0 40px 24px;scroll-snap-type:x proximity;}
+.carousel-item{flex:0 0 auto;width:170px;scroll-snap-align:start;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:10px;transition:transform 0.3s ease;}
+.carousel-item:hover{transform:translateY(-4px)}
+.carousel-icon{width:170px;height:170px;}
+.carousel-label{font-size:12px;letter-spacing:0.04em;text-align:center;color:var(--ink);text-transform:uppercase;}
+.carousel-year{font-family:'Space Mono',monospace;font-size:10px;color:var(--mid);}
 .project-overlay{position:fixed;inset:0;z-index:200;background:var(--bg);display:flex;opacity:0;pointer-events:none;transition:opacity 0.45s ease;}
 .project-overlay.open{opacity:1;pointer-events:all}
 .project-media{width:58%;height:100%;background:#E8E4DC;display:flex;align-items:center;justify-content:center;overflow:hidden;}
@@ -53,9 +65,6 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content
 .project-meta-item label{display:block;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--mid);margin-bottom:4px;}
 .project-meta-item p{font-size:14px;color:var(--ink)}
 .project-desc{font-size:15px;line-height:1.8;color:var(--mid);}
-.reset-view{position:fixed;bottom:36px;right:40px;z-index:10;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--mid);background:none;border:1px solid var(--rule);border-radius:20px;padding:8px 16px;cursor:pointer;transition:all 0.2s;opacity:0;pointer-events:none;}
-.reset-view.show{opacity:1;pointer-events:all}
-.reset-view:hover{color:var(--ink);border-color:var(--ink)}
 @media(max-width:768px){
   nav{padding:20px 24px}
   .project-overlay{flex-direction:column}
@@ -63,7 +72,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content
   .project-info{width:100%;padding:40px 24px}
   .intro{left:24px;bottom:12px;position:static;padding:16px 24px 0;text-align:center}
   .reset-view{display:none}
-  html,body{overflow-y:auto;height:auto;}
+  .scroll-cue{display:none}
+  body{overflow-y:auto;height:auto;}
   .canvas{
     width:100%;height:auto;min-height:auto;position:static;
     display:grid;grid-template-columns:repeat(2,1fr);
@@ -86,20 +96,28 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content
     position:static;background:none;border:none;padding:2px 0 0;
     text-align:center;white-space:normal;
   }
+  .carousel-item{width:130px}
+  .carousel-icon{width:130px;height:130px;}
 }
 </style>
 </head>
 <body>
 <nav>
-  <a href="#" class="nav-name">Joy Xinyi Ma</a>
+  <a href="#" class="nav-name">[ Joy Xinyi Ma ]</a>
   <ul class="nav-links">
     <li><a href="#" onclick="closeProject();return false;">Work</a></li>
     <li><a href="mailto:joyxyma@gmail.com">Contact</a></li>
   </ul>
 </nav>
-<div class="canvas" id="canvas"></div>
+<div class="canvas" id="canvas">
+  <div class="scroll-cue">&#8595; more work below</div>
+</div>
 <div class="intro"><p>Architectural &amp; Spatial Designer, Los Angeles</p></div>
 <button class="reset-view" id="resetView">Reset View</button>
+<section class="carousel-section">
+  <p class="carousel-heading">More Work</p>
+  <div class="carousel-track" id="carouselTrack"></div>
+</section>
 <div class="project-overlay" id="overlay">
   <button class="project-close" onclick="closeProject()">Close</button>
   <div class="project-media" id="overlay-media"></div>
@@ -111,25 +129,37 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content
   </div>
 </div>
 <script>
-const projects = [
-  {id:"shinsegae",label:"Shinsegae Daegu",tag:"Retail",title:"Shinsegae Daegu",meta:[{l:"Location",v:"Daegu, Korea"},{l:"Size",v:"~10,000 sq ft"},{l:"Year",v:"2025"},{l:"With",v:"Snarkitecture"}],desc:"Full-phase retail renovation for Shinsegae's Daegu location. Scope included complete layout overhaul, new concept and brand narrative, custom millwork, installations, and design for Shinsegae's in-house brand Casestudy, with a focus on attracting a younger, experience-driven demographic.",color:"#C97B5A",w:190,h:230},
-  {id:"hacienda",label:"Hacienda Residence",tag:"Residential",title:"Hacienda Residence",meta:[{l:"Location",v:"Arcadia, CA"},{l:"Size",v:"~8,000 sq ft"},{l:"Status",v:"Under Construction"},{l:"With",v:"PlayFlo"}],desc:"Ground-up residential project. Served as project lead and manager across all design phases. Currently under construction with construction administration ongoing.",color:"#8C9A7B",w:165,h:200},
-  {id:"greenfield",label:"Greenfield Residence",tag:"Residential",title:"Greenfield Residence",meta:[{l:"Location",v:"Arcadia, CA"},{l:"Size",v:"~7,000 sq ft"},{l:"Status",v:"Entering Construction"},{l:"With",v:"PlayFlo"}],desc:"Ground-up residential project led across all design phases through bidding. Currently moving into construction with construction administration to follow.",color:"#7C93A3",w:155,h:190},
-  {id:"steep",label:"Steep LA",tag:"Hospitality",title:"Steep LA",meta:[{l:"Location",v:"Los Angeles"},{l:"Type",v:"Teahouse / Bar"},{l:"Year",v:"2024"},{l:"With",v:"PlayFlo"}],desc:"Interior upgrades for the award-winning teahouse and cocktail bar, including custom millwork, seating, bar layouts, and equipment. Provided on-site creative direction through installation.",color:"#B5654A",w:75,h:88,img:"steepla-icon.png"},
-  {id:"glowbar",label:"GlowBar HQ",tag:"Office",title:"GlowBar HQ",meta:[{l:"Location",v:"New York, NY"},{l:"Type",v:"Office HQ"},{l:"Year",v:"2023"},{l:"With",v:"PlayFlo"}],desc:"Schematic layouts and custom millwork designs for GlowBar's NYC office headquarters. Managed FF&E selection and construction detailing.",color:"#6E7A85",w:140,h:165},
-  {id:"brooklyn",label:"Brooklyn Heights Condo",tag:"Residential",title:"Brooklyn Heights Condo",meta:[{l:"Location",v:"New York, NY"},{l:"Type",v:"Renovation"},{l:"Year",v:"2023"},{l:"With",v:"PlayFlo"}],desc:"Design lead from layout planning through custom millwork, material selection, finishes, FF&E packages, and 3D visualization. Collaborated with architect of record, vendors, and contractors.",color:"#C79B92",w:150,h:180},
-  {id:"shenzhen",label:"Shenzhen Universiade",tag:"Civic",title:"Shenzhen Universiade Sports Centre",meta:[{l:"Location",v:"Shenzhen, China"},{l:"Type",v:"Civic / Exhibition"},{l:"Year",v:"2023"},{l:"With",v:"PlayFlo"}],desc:"Design lead for community and visitor centers at the Shenzhen Universiade Sports Centre. Managed client relations and coordination with local architects for specification packages and construction documents.",color:"#8A8C5E",w:170,h:200},
-  {id:"ftw",label:"FTW Burger Chain",tag:"Hospitality",title:"FTW Burger Chain",meta:[{l:"Location",v:"Los Angeles, CA"},{l:"Type",v:"Restaurant / Branding"},{l:"Year",v:"2021"},{l:"With",v:"Owiu"}],desc:"Designed and implemented custom millwork and furniture across multiple restaurant locations ensuring brand cohesion and scalability. Developed FTW's branding including logo design now used across all locations.",color:"#A85D3D",w:155,h:185},
-  {id:"jmm",label:"Jacque Marie Mage HQ",tag:"Office",title:"Jacque Marie Mage HQ",meta:[{l:"Location",v:"Los Angeles, CA"},{l:"Type",v:"Office / Showroom"},{l:"Year",v:"2022"},{l:"With",v:"Studio Murane"}],desc:"Design of the LA headquarters for Jacque Marie Mage, creating a space that reflects the brand's craftsmanship and heritage. Integrated custom furnishings and materials across functional office and high-end showroom areas.",color:"#9A968C",w:145,h:175},
-  {id:"cannabis",label:"Cannabis Lounge",tag:"Retail",title:"Cannabis Lounge Pop-Up",meta:[{l:"Location",v:"Los Angeles, CA"},{l:"Type",v:"Retail / Experiential"},{l:"Year",v:"2022"},{l:"With",v:"Studio Murane"}],desc:"Designer of a cannabis lounge and retail pop-up creating an immersive environment merging retail, hospitality, and wellness. Focused on custom millwork, spatial planning, and customer experience.",color:"#6F7A5E",w:135,h:160},
-  {id:"paloma",label:"Paloma Venice Beach",tag:"Hospitality",title:"Paloma Venice Beach",meta:[{l:"Location",v:"Venice Beach, CA"},{l:"Type",v:"Restaurant"},{l:"Year",v:"2024"},{l:"With",v:"IT-Makes"}],desc:"Assisted in navigating permitting processes and ensuring code compliance for restaurant operations.",color:"#D9A15C",w:140,h:168},
-  {id:"sundaepai",label:"Sundaepai",tag:"Experiential",title:"Sundaepai",meta:[{l:"Location",v:"TBD"},{l:"Type",v:"Experiential"},{l:"Year",v:"2024"}],desc:"Details coming soon.",color:"#C9A15C",w:270,h:324,img:"sundaepai-icon.png"},
+const favorites = [
+  {id:"shinsegae",label:"Shinsegae Daegu",tag:"Retail",title:"Shinsegae Daegu",meta:[{l:"Location",v:"Daegu, Korea"},{l:"Size",v:"~10,000 sq ft"},{l:"Year",v:"2025"},{l:"With",v:"Snarkitecture"}],desc:"Full-phase retail renovation for Shinsegae's Daegu location. Scope included complete layout overhaul, new concept and brand narrative, custom millwork, installations, and design for Shinsegae's in-house brand Casestudy, with a focus on attracting a younger, experience-driven demographic.",color:"#C97B5A",w:150,h:180,year:"2025"},
+  {id:"hacienda",label:"Hacienda Residence",tag:"Residential",title:"Hacienda Residence",meta:[{l:"Location",v:"Arcadia, CA"},{l:"Size",v:"~8,000 sq ft"},{l:"Status",v:"Under Construction"},{l:"With",v:"PlayFlo"}],desc:"Ground-up residential project. Served as project lead and manager across all design phases. Currently under construction with construction administration ongoing.",color:"#8C9A7B",w:140,h:170,year:"2024"},
+  {id:"greenfield",label:"Greenfield Residence",tag:"Residential",title:"Greenfield Residence",meta:[{l:"Location",v:"Arcadia, CA"},{l:"Size",v:"~7,000 sq ft"},{l:"Status",v:"Entering Construction"},{l:"With",v:"PlayFlo"}],desc:"Ground-up residential project led across all design phases through bidding. Currently moving into construction with construction administration to follow.",color:"#7C93A3",w:135,h:165,year:"2024"},
+  {id:"steep",label:"Steep LA",tag:"Hospitality",title:"Steep LA",meta:[{l:"Location",v:"Los Angeles"},{l:"Type",v:"Teahouse / Bar"},{l:"Year",v:"2024"},{l:"With",v:"PlayFlo"}],desc:"Interior upgrades for the award-winning teahouse and cocktail bar, including custom millwork, seating, bar layouts, and equipment. Provided on-site creative direction through installation.",color:"#B5654A",w:75,h:88,img:"steepla-icon.png",year:"2024"},
+  {id:"glowbar",label:"GlowBar HQ",tag:"Office",title:"GlowBar HQ",meta:[{l:"Location",v:"New York, NY"},{l:"Type",v:"Office HQ"},{l:"Year",v:"2023"},{l:"With",v:"PlayFlo"}],desc:"Schematic layouts and custom millwork designs for GlowBar's NYC office headquarters. Managed FF&E selection and construction detailing.",color:"#6E7A85",w:130,h:155,year:"2023"},
+  {id:"brooklyn",label:"Brooklyn Heights Condo",tag:"Residential",title:"Brooklyn Heights Condo",meta:[{l:"Location",v:"New York, NY"},{l:"Type",v:"Renovation"},{l:"Year",v:"2023"},{l:"With",v:"PlayFlo"}],desc:"Design lead from layout planning through custom millwork, material selection, finishes, FF&E packages, and 3D visualization. Collaborated with architect of record, vendors, and contractors.",color:"#C79B92",w:135,h:160,year:"2023"},
+];
+
+const moreWork = [
+  {id:"shenzhen",label:"Shenzhen Universiade",tag:"Civic",title:"Shenzhen Universiade Sports Centre",meta:[{l:"Location",v:"Shenzhen, China"},{l:"Type",v:"Civic / Exhibition"},{l:"Year",v:"2023"},{l:"With",v:"PlayFlo"}],desc:"Design lead for community and visitor centers at the Shenzhen Universiade Sports Centre. Managed client relations and coordination with local architects for specification packages and construction documents.",color:"#8A8C5E",year:"2023"},
+  {id:"ftw",label:"FTW Burger Chain",tag:"Hospitality",title:"FTW Burger Chain",meta:[{l:"Location",v:"Los Angeles, CA"},{l:"Type",v:"Restaurant / Branding"},{l:"Year",v:"2021"},{l:"With",v:"Owiu"}],desc:"Designed and implemented custom millwork and furniture across multiple restaurant locations ensuring brand cohesion and scalability. Developed FTW's branding including logo design now used across all locations.",color:"#A85D3D",year:"2021"},
+  {id:"jmm",label:"Jacque Marie Mage HQ",tag:"Office",title:"Jacque Marie Mage HQ",meta:[{l:"Location",v:"Los Angeles, CA"},{l:"Type",v:"Office / Showroom"},{l:"Year",v:"2022"},{l:"With",v:"Studio Murane"}],desc:"Design of the LA headquarters for Jacque Marie Mage, creating a space that reflects the brand's craftsmanship and heritage. Integrated custom furnishings and materials across functional office and high-end showroom areas.",color:"#9A968C",year:"2022"},
+  {id:"cannabis",label:"Cannabis Lounge",tag:"Retail",title:"Cannabis Lounge Pop-Up",meta:[{l:"Location",v:"Los Angeles, CA"},{l:"Type",v:"Retail / Experiential"},{l:"Year",v:"2022"},{l:"With",v:"Studio Murane"}],desc:"Designer of a cannabis lounge and retail pop-up creating an immersive environment merging retail, hospitality, and wellness. Focused on custom millwork, spatial planning, and customer experience.",color:"#6F7A5E",year:"2022"},
+  {id:"paloma",label:"Paloma Venice Beach",tag:"Hospitality",title:"Paloma Venice Beach",meta:[{l:"Location",v:"Venice Beach, CA"},{l:"Type",v:"Restaurant"},{l:"Year",v:"2024"},{l:"With",v:"IT-Makes"}],desc:"Assisted in navigating permitting processes and ensuring code compliance for restaurant operations.",color:"#D9A15C",year:"2024"},
+  {id:"sundaepai",label:"Sundaepai",tag:"Experiential",title:"Sundaepai",meta:[{l:"Location",v:"TBD"},{l:"Type",v:"Experiential"},{l:"Year",v:"2024"}],desc:"Details coming soon.",color:"#C9A15C",img:"sundaepai-icon.png",year:"2024"},
+  {id:"technolonely",label:"Tech-No-Lonely",tag:"Academic",title:"Tech-No-Lonely",meta:[{l:"Type",v:"Thesis Project"},{l:"Year",v:"2022"}],desc:"Details coming soon.",color:"#B8A97A",year:"2022"},
+  {id:"shrouded",label:"The Shrouded Objects",tag:"Academic",title:"The Shrouded Objects",meta:[{l:"Type",v:"Studio Project"},{l:"Year",v:"2022"}],desc:"Details coming soon.",color:"#A6A084",year:"2022"},
+  {id:"particles",label:"Particles Club",tag:"Academic",title:"Particles Club",meta:[{l:"Type",v:"Studio Project"},{l:"Year",v:"2021"}],desc:"Details coming soon.",color:"#94957C",year:"2021"},
+  {id:"figural",label:"The Figural University",tag:"Academic",title:"The Figural University",meta:[{l:"Type",v:"Studio Project"},{l:"Year",v:"2021"}],desc:"Details coming soon.",color:"#B29A7E",year:"2021"},
+  {id:"nine",label:"The Nine",tag:"Academic",title:"The Nine",meta:[{l:"Type",v:"Studio Project"},{l:"Year",v:"2020"}],desc:"Details coming soon.",color:"#9C8F73",year:"2020"},
+  {id:"squeeze",label:"The Squeeze",tag:"Academic",title:"The Squeeze",meta:[{l:"Type",v:"Studio Project"},{l:"Year",v:"2019"}],desc:"Details coming soon.",color:"#A89B7F",year:"2019"},
+  {id:"designdev",label:"Design Development",tag:"Academic",title:"Design Development",meta:[{l:"Type",v:"Studio Project"},{l:"Year",v:"2021"}],desc:"Details coming soon.",color:"#8F9A7E",year:"2021"},
+  {id:"berlin",label:"Berlin Techno Booth",tag:"Academic",title:"Berlin Techno Booth",meta:[{l:"Type",v:"Competition Work"},{l:"Year",v:"2021"}],desc:"Details coming soon.",color:"#7C8E93",year:"2021"},
+  {id:"lishui",label:"Future Lishui City",tag:"Academic",title:"Future Lishui City",meta:[{l:"Type",v:"Competition Work"},{l:"Year",v:"2021"}],desc:"Details coming soon.",color:"#87908C",year:"2021"},
+  {id:"ambulance",label:"Bio Degradable Ambulance",tag:"Academic",title:"Bio Degradable Ambulance",meta:[{l:"Type",v:"Product Design"},{l:"Year",v:"2020"}],desc:"Details coming soon.",color:"#9A8B70",year:"2020"},
 ];
 
 const positions = [
-  {x:8,y:12,r:-4},{x:32,y:8,r:3},{x:58,y:5,r:-2},{x:76,y:15,r:5},
-  {x:6,y:42,r:2},{x:28,y:48,r:-6},{x:52,y:38,r:4},{x:74,y:44,r:-3},
-  {x:10,y:68,r:-3},{x:36,y:72,r:5},{x:62,y:65,r:-4},{x:26,y:47,r:-11}
+  {x:8,y:34,r:-4},{x:24,y:18,r:3},{x:40,y:38,r:-2},
+  {x:58,y:16,r:5},{x:74,y:36,r:-3},{x:88,y:20,r:4}
 ];
 
 const icons = {
@@ -138,20 +168,19 @@ const icons = {
   Hospitality:'<svg viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 22 H38 V38 A12 12 0 0 1 14 38 Z M38 26 H46 A6 6 0 0 1 46 38 H38 M20 14 Q26 8 32 14"/></svg>',
   Office:'<svg viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 50 V16 H42 V50 M24 22 H28 M32 22 H36 M24 30 H28 M32 30 H36 M24 38 H28 M32 38 H36 M12 50 H48"/></svg>',
   Civic:'<svg viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10 V50 M20 12 H42 L36 20 L42 28 H20"/></svg>',
-  Experiential:'<svg viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M30 8 L34 24 L50 28 L34 32 L30 48 L26 32 L10 28 L26 24 Z M46 10 L48 15 L53 17 L48 19 L46 24 L44 19 L39 17 L44 15 Z"/></svg>'
+  Experiential:'<svg viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M30 8 L34 24 L50 28 L34 32 L30 48 L26 32 L10 28 L26 24 Z M46 10 L48 15 L53 17 L48 19 L46 24 L44 19 L39 17 L44 15 Z"/></svg>',
+  Academic:'<svg viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M30 14 L54 24 L30 34 L6 24 Z M18 28 V40 Q30 46 42 40 V28 M54 24 V38"/></svg>'
 };
 
 const doodles = [
-  {x:20,y:3,r:-8,s:34,svg:'<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M4 30 Q10 6 34 10" stroke-linecap="round"/><path d="M28 6 L34 10 L30 16" stroke-linecap="round" stroke-linejoin="round"/></svg>'},
-  {x:46,y:2,r:5,s:26,svg:'<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M6 30 L20 6 L34 30 Z"/></svg>'},
-  {x:66,y:20,r:0,s:22,text:'+'},
-  {x:2,y:55,r:0,s:20,text:'≈'},
-  {x:88,y:58,r:-6,s:30,svg:'<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="20" cy="20" r="14"/><line x1="6" y1="20" x2="34" y2="20"/></svg>'},
-  {x:44,y:84,r:4,s:26,text:'∑'},
-  {x:80,y:6,r:10,s:20,text:'x²'},
-  {x:16,y:90,r:-4,s:28,svg:'<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M4 20 Q10 4 16 20 T28 20 T40 20" stroke-linecap="round"/></svg>'},
-  {x:58,y:50,r:0,s:20,text:'○'},
-  {x:92,y:36,r:0,s:20,text:'?'}
+  {x:20,y:3,r:-8,s:22,svg:'<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><path d="M20 4 L24 15 L36 15 L26 22 L30 34 L20 27 L10 34 L14 22 L4 15 L16 15 Z"/></svg>'},
+  {x:46,y:2,r:12,s:16,svg:'<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><path d="M20 4 L24 15 L36 15 L26 22 L30 34 L20 27 L10 34 L14 22 L4 15 L16 15 Z"/></svg>'},
+  {x:66,y:8,r:-6,s:20,svg:'<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><path d="M20 4 L24 15 L36 15 L26 22 L30 34 L20 27 L10 34 L14 22 L4 15 L16 15 Z"/></svg>'},
+  {x:2,y:55,r:0,s:18,svg:'<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><path d="M20 4 L24 15 L36 15 L26 22 L30 34 L20 27 L10 34 L14 22 L4 15 L16 15 Z"/></svg>'},
+  {x:92,y:12,r:8,s:24,svg:'<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><path d="M20 4 L24 15 L36 15 L26 22 L30 34 L20 27 L10 34 L14 22 L4 15 L16 15 Z"/></svg>'},
+  {x:44,y:70,r:4,s:20,svg:'<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><path d="M20 4 L24 15 L36 15 L26 22 L30 34 L20 27 L10 34 L14 22 L4 15 L16 15 Z"/></svg>'},
+  {x:80,y:60,r:-10,s:18,svg:'<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><path d="M20 4 L24 15 L36 15 L26 22 L30 34 L20 27 L10 34 L14 22 L4 15 L16 15 Z"/></svg>'},
+  {x:14,y:80,r:6,s:22,svg:'<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><path d="M20 4 L24 15 L36 15 L26 22 L30 34 L20 27 L10 34 L14 22 L4 15 L16 15 Z"/></svg>'}
 ];
 
 const canvas = document.getElementById('canvas');
@@ -161,8 +190,8 @@ const scale = isMobile ? 0.9 : 1.3;
 doodles.forEach(d=>{
   const el = document.createElement('div');
   el.className = 'doodle';
-  el.style.cssText = `left:${d.x}%;top:${d.y}%;width:${d.s}px;height:${d.s}px;transform:rotate(${d.r}deg);font-size:${Math.round(d.s*0.55)}px;`;
-  el.innerHTML = d.svg || d.text;
+  el.style.cssText = `left:${d.x}%;top:${d.y}%;width:${d.s}px;height:${d.s}px;transform:rotate(${d.r}deg);`;
+  el.innerHTML = d.svg;
   canvas.appendChild(el);
 });
 
@@ -192,7 +221,7 @@ function renderMedia(container, p, isOverlay){
   }
 }
 
-projects.forEach((p,i) => {
+favorites.forEach((p,i) => {
   const pos = positions[i];
   const el = document.createElement('div');
   el.className = 'object';
@@ -204,6 +233,16 @@ projects.forEach((p,i) => {
   el.addEventListener('click',()=>openProject(p));
   canvas.appendChild(el);
   setTimeout(()=>el.classList.add('in'), 80*i);
+});
+
+const carouselTrack = document.getElementById('carouselTrack');
+moreWork.forEach(p=>{
+  const item = document.createElement('div');
+  item.className = 'carousel-item';
+  item.innerHTML = `<div class="carousel-icon"><div class="obj-placeholder" style="color:${p.color}"></div></div><span class="carousel-label">${p.label}</span><span class="carousel-year">${p.year}</span>`;
+  renderMedia(item.querySelector('.obj-placeholder'), p, false);
+  item.addEventListener('click',()=>openProject(p));
+  carouselTrack.appendChild(item);
 });
 
 function openProject(p){
