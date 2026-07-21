@@ -30,9 +30,12 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content
 .obj-icon-wrap{width:100%;height:100%;transition:transform 0.4s cubic-bezier(0.25,0.46,0.45,0.94);}
 .object:hover .obj-placeholder{filter:drop-shadow(0 10px 18px rgba(28,28,26,0.28))}
 .object:hover .obj-label{opacity:1;transform:translateY(0)}
-.obj-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;transition:filter 0.35s;filter:drop-shadow(0 6px 10px rgba(28,28,26,0.16));}
+.obj-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;transition:filter 0.35s,opacity 0.3s ease;filter:drop-shadow(0 6px 10px rgba(28,28,26,0.16));}
 .obj-placeholder svg{width:100%;height:100%;overflow:visible;opacity:0.85}
 .obj-placeholder img{width:100%;height:100%;object-fit:cover;border-radius:2px;display:block;}
+.obj-photo{position:absolute;top:50%;left:50%;width:210px;height:150px;transform:translate(-50%,-50%) scale(0.82);object-fit:cover;border-radius:6px;opacity:0;pointer-events:none;transition:opacity 0.35s ease,transform 0.35s ease;box-shadow:0 18px 34px rgba(28,28,26,0.35);}
+.object:hover .obj-photo{opacity:1;transform:translate(-50%,-50%) scale(1);}
+.object:hover .obj-placeholder{opacity:0;}
 .obj-label{margin-bottom:-4px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--mid);white-space:nowrap;opacity:0;transform:translateY(-4px);transition:all 0.25s ease;background:var(--bg);padding:4px 10px;border-radius:20px;border:1px solid var(--rule);}
 .doodle{position:absolute;z-index:1;pointer-events:none;color:var(--mid);opacity:0.4;font-family:'EB Garamond',serif;font-style:italic;display:flex;align-items:center;justify-content:center;}
 .reset-view{position:fixed;bottom:36px;right:40px;z-index:10;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--mid);background:none;border:1px solid var(--rule);border-radius:20px;padding:8px 16px;cursor:pointer;transition:all 0.2s;opacity:0;pointer-events:none;}
@@ -96,6 +99,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content
     transform:none !important;
   }
   .doodle{display:none}
+  .obj-photo{display:none}
   .obj-label{
     opacity:1 !important;transform:none !important;
     position:static;background:none;border:none;padding:2px 0 0;
@@ -242,8 +246,9 @@ favorites.forEach((p,i) => {
   const w = Math.round(p.w*scale), h = Math.round(p.h*scale);
   el.style.cssText = `left:${pos.x}%;top:${pos.y}%;width:${w}px;height:${h}px;`;
   el.dataset.rotate = pos.r;
-  el.innerHTML = `<span class="obj-label">${p.label}</span><div class="obj-icon-wrap" style="transform:rotate(${pos.r}deg)"><div class="obj-placeholder" style="color:${p.color}"></div></div>`;
+  el.innerHTML = `<span class="obj-label">${p.label}</span><div class="obj-icon-wrap" style="transform:rotate(${pos.r}deg)"><div class="obj-placeholder" style="color:${p.color}"></div></div><img class="obj-photo" src="images/${p.id}/1.jpg" alt="">`;
   renderMedia(el.querySelector('.obj-placeholder'), p, false);
+  el.querySelector('.obj-photo').addEventListener('error', function(){ this.remove(); });
   el.addEventListener('click',()=>openProject(p));
   canvas.appendChild(el);
   setTimeout(()=>el.classList.add('in'), 80*i);
