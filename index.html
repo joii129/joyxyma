@@ -52,8 +52,14 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content
 .slide-fade{opacity:0}
 .project-overlay{position:fixed;inset:0;z-index:200;background:var(--bg);display:flex;opacity:0;pointer-events:none;transition:opacity 0.45s ease;}
 .project-overlay.open{opacity:1;pointer-events:all}
-.project-media{width:58%;height:100%;background:#E8E4DC;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.project-media{width:58%;height:100%;background:#E8E4DC;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;}
 .project-media-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:12px;letter-spacing:0.12em;text-transform:uppercase;color:var(--mid);opacity:0.4;}
+.gallery-img{width:100%;height:100%;object-fit:cover;transition:opacity 0.3s ease;}
+.gallery-arrow{position:absolute;top:50%;transform:translateY(-50%);background:rgba(245,243,239,0.85);border:none;width:44px;height:44px;border-radius:50%;font-family:'Space Grotesk',sans-serif;font-size:22px;color:var(--ink);cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:5;transition:background 0.2s;}
+.gallery-arrow:hover{background:rgba(245,243,239,1)}
+.gallery-arrow-left{left:16px}
+.gallery-arrow-right{right:16px}
+.gallery-counter{position:absolute;bottom:16px;right:16px;font-family:'Space Mono',monospace;font-size:11px;color:var(--ink);background:rgba(245,243,239,0.85);padding:4px 10px;border-radius:12px;z-index:5;}
 .project-info{width:42%;padding:80px 60px;display:flex;flex-direction:column;justify-content:center;overflow-y:auto;}
 .project-close{position:fixed;top:36px;right:40px;z-index:300;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--mid);cursor:pointer;border:none;background:none;transition:color 0.2s;padding:0;}
 .project-close:hover{color:var(--ink)}
@@ -142,13 +148,13 @@ const favorites = [
   {id:"hacienda",label:"Hacienda Residence",tag:"Residential",title:"Hacienda Residence",meta:[{l:"Location",v:"Arcadia, CA"},{l:"Size",v:"~8,000 sq ft"},{l:"Status",v:"Under Construction"},{l:"With",v:"PlayFlo"}],desc:"Ground-up residential project. Served as project lead and manager across all design phases. Currently under construction with construction administration ongoing.",color:"#8C9A7B",w:140,h:170,year:"2024"},
   {id:"greenfield",label:"Greenfield Residence",tag:"Residential",title:"Greenfield Residence",meta:[{l:"Location",v:"Arcadia, CA"},{l:"Size",v:"~7,000 sq ft"},{l:"Status",v:"Entering Construction"},{l:"With",v:"PlayFlo"}],desc:"Ground-up residential project led across all design phases through bidding. Currently moving into construction with construction administration to follow.",color:"#7C93A3",w:135,h:165,year:"2024"},
   {id:"steep",label:"Steep LA",tag:"Hospitality",title:"Steep LA",meta:[{l:"Location",v:"Los Angeles"},{l:"Type",v:"Teahouse / Bar"},{l:"Year",v:"2024"},{l:"With",v:"PlayFlo"}],desc:"Interior upgrades for the award-winning teahouse and cocktail bar, including custom millwork, seating, bar layouts, and equipment. Provided on-site creative direction through installation.",color:"#B5654A",w:75,h:88,img:"steepla-icon.png",year:"2024"},
-  {id:"glowbar",label:"GlowBar HQ",tag:"Office",title:"GlowBar HQ",meta:[{l:"Location",v:"New York, NY"},{l:"Type",v:"Office HQ"},{l:"Year",v:"2023"},{l:"With",v:"PlayFlo"}],desc:"Schematic layouts and custom millwork designs for GlowBar's NYC office headquarters. Managed FF&E selection and construction detailing.",color:"#6E7A85",w:130,h:155,year:"2023"},
+  {id:"ftw",label:"FTW Burger Chain",tag:"Hospitality",title:"FTW Burger Chain",meta:[{l:"Location",v:"Los Angeles, CA"},{l:"Type",v:"Restaurant / Branding"},{l:"Year",v:"2021"},{l:"With",v:"Owiu"}],desc:"Designed and implemented custom millwork and furniture across multiple restaurant locations ensuring brand cohesion and scalability. Developed FTW's branding including logo design now used across all locations.",color:"#A85D3D",w:130,h:155,year:"2021"},
   {id:"brooklyn",label:"Brooklyn Heights Condo",tag:"Residential",title:"Brooklyn Heights Condo",meta:[{l:"Location",v:"New York, NY"},{l:"Type",v:"Renovation"},{l:"Year",v:"2023"},{l:"With",v:"PlayFlo"}],desc:"Design lead from layout planning through custom millwork, material selection, finishes, FF&E packages, and 3D visualization. Collaborated with architect of record, vendors, and contractors.",color:"#C79B92",w:135,h:160,year:"2023"},
 ];
 
 const moreWork = [
   {id:"shenzhen",label:"Shenzhen Universiade",tag:"Civic",title:"Shenzhen Universiade Sports Centre",meta:[{l:"Location",v:"Shenzhen, China"},{l:"Type",v:"Civic / Exhibition"},{l:"Year",v:"2023"},{l:"With",v:"PlayFlo"}],desc:"Design lead for community and visitor centers at the Shenzhen Universiade Sports Centre. Managed client relations and coordination with local architects for specification packages and construction documents.",color:"#8A8C5E",year:"2023"},
-  {id:"ftw",label:"FTW Burger Chain",tag:"Hospitality",title:"FTW Burger Chain",meta:[{l:"Location",v:"Los Angeles, CA"},{l:"Type",v:"Restaurant / Branding"},{l:"Year",v:"2021"},{l:"With",v:"Owiu"}],desc:"Designed and implemented custom millwork and furniture across multiple restaurant locations ensuring brand cohesion and scalability. Developed FTW's branding including logo design now used across all locations.",color:"#A85D3D",year:"2021"},
+  {id:"glowbar",label:"GlowBar HQ",tag:"Office",title:"GlowBar HQ",meta:[{l:"Location",v:"New York, NY"},{l:"Type",v:"Office HQ"},{l:"Year",v:"2023"},{l:"With",v:"PlayFlo"}],desc:"Schematic layouts and custom millwork designs for GlowBar's NYC office headquarters. Managed FF&E selection and construction detailing.",color:"#6E7A85",year:"2023"},
   {id:"jmm",label:"Jacque Marie Mage HQ",tag:"Office",title:"Jacque Marie Mage HQ",meta:[{l:"Location",v:"Los Angeles, CA"},{l:"Type",v:"Office / Showroom"},{l:"Year",v:"2022"},{l:"With",v:"Studio Murane"}],desc:"Design of the LA headquarters for Jacque Marie Mage, creating a space that reflects the brand's craftsmanship and heritage. Integrated custom furnishings and materials across functional office and high-end showroom areas.",color:"#9A968C",year:"2022"},
   {id:"cannabis",label:"Cannabis Lounge",tag:"Retail",title:"Cannabis Lounge Pop-Up",meta:[{l:"Location",v:"Los Angeles, CA"},{l:"Type",v:"Retail / Experiential"},{l:"Year",v:"2022"},{l:"With",v:"Studio Murane"}],desc:"Designer of a cannabis lounge and retail pop-up creating an immersive environment merging retail, hospitality, and wellness. Focused on custom millwork, spatial planning, and customer experience.",color:"#6F7A5E",year:"2022"},
   {id:"paloma",label:"Paloma Venice Beach",tag:"Hospitality",title:"Paloma Venice Beach",meta:[{l:"Location",v:"Venice Beach, CA"},{l:"Type",v:"Restaurant"},{l:"Year",v:"2024"},{l:"With",v:"IT-Makes"}],desc:"Assisted in navigating permitting processes and ensuring code compliance for restaurant operations.",color:"#D9A15C",year:"2024"},
@@ -293,13 +299,60 @@ document.getElementById('nextSlide').addEventListener('click', (e)=>{
 showSlide(slideIndex);
 startSlideTimer();
 
+function probeGallery(id, cb){
+  const found = [];
+  const maxTry = 30;
+  let i = 1;
+  function tryNext(){
+    if(i > maxTry){ cb(found); return; }
+    const img = new Image();
+    img.onload = ()=>{ found.push(`images/${id}/${i}.jpg`); i++; tryNext(); };
+    img.onerror = ()=>{ cb(found); };
+    img.src = `images/${id}/${i}.jpg`;
+  }
+  tryNext();
+}
+
+let galleryImages = [];
+let galleryIndex = 0;
+const overlayMedia = document.getElementById('overlay-media');
+
+function renderGallery(){
+  overlayMedia.innerHTML = `
+    <img class="gallery-img" src="${galleryImages[galleryIndex]}" alt="">
+    <button class="gallery-arrow gallery-arrow-left" id="galleryPrev" aria-label="Previous photo">&#8249;</button>
+    <button class="gallery-arrow gallery-arrow-right" id="galleryNext" aria-label="Next photo">&#8250;</button>
+    <span class="gallery-counter">${galleryIndex+1} / ${galleryImages.length}</span>
+  `;
+  document.getElementById('galleryPrev').addEventListener('click', e=>{
+    e.stopPropagation();
+    galleryIndex = (galleryIndex-1+galleryImages.length) % galleryImages.length;
+    renderGallery();
+  });
+  document.getElementById('galleryNext').addEventListener('click', e=>{
+    e.stopPropagation();
+    galleryIndex = (galleryIndex+1) % galleryImages.length;
+    renderGallery();
+  });
+}
+
 function openProject(p){
   document.getElementById('overlay-tag').textContent=p.tag;
   document.getElementById('overlay-title').textContent=p.title;
   document.getElementById('overlay-desc').textContent=p.desc;
-  renderMedia(document.getElementById('overlay-media'), p, true);
   document.getElementById('overlay-meta').innerHTML=p.meta.map(m=>`<div class="project-meta-item"><label>${m.l}</label><p>${m.v}</p></div>`).join('');
   document.getElementById('overlay').classList.add('open');
+  overlayMedia.style.background = '';
+  overlayMedia.innerHTML = '';
+  probeGallery(p.id, (found)=>{
+    if(found.length > 0){
+      galleryImages = found;
+      galleryIndex = 0;
+      renderGallery();
+    } else {
+      renderMedia(overlayMedia, p, true);
+    }
+  });
 }
 function closeProject(){document.getElementById('overlay').classList.remove('open');}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeProject();});
