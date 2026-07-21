@@ -49,15 +49,18 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content
 .slide-arrow-left{left:0}
 .slide-arrow-right{right:0}
 .slideshow{cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:20px;}
-.slide-icon-wrap{width:280px;height:280px;transition:opacity 0.4s ease;}
+.slide-icon-wrap{width:100%;max-width:640px;height:440px;display:flex;align-items:center;justify-content:center;background:var(--rule);border-radius:6px;overflow:hidden;transition:opacity 0.4s ease;}
+.slide-icon-wrap .obj-placeholder{width:100%;height:100%;}
+.slide-icon-wrap .obj-placeholder img{width:auto;height:auto;max-width:100%;max-height:100%;object-fit:contain;border-radius:0;}
+.slide-icon-wrap .obj-placeholder svg{width:45%;height:45%;}
 .slide-label{font-size:16px;letter-spacing:0.05em;text-align:center;color:var(--ink);text-transform:uppercase;transition:opacity 0.4s ease;}
 .slide-year{font-family:'Space Mono',monospace;font-size:12px;color:var(--mid);transition:opacity 0.4s ease;}
 .slide-fade{opacity:0}
 .project-overlay{position:fixed;inset:0;z-index:200;background:var(--bg);display:flex;opacity:0;pointer-events:none;transition:opacity 0.45s ease;}
 .project-overlay.open{opacity:1;pointer-events:all}
-.project-media{width:58%;height:100%;background:#E8E4DC;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;}
+.project-media{width:58%;height:100%;background:var(--bg);display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;}
 .project-media-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:12px;letter-spacing:0.12em;text-transform:uppercase;color:var(--mid);opacity:0.4;}
-.gallery-img{width:100%;height:100%;object-fit:cover;transition:opacity 0.3s ease;}
+.gallery-img{max-width:92%;max-height:92%;width:auto;height:auto;object-fit:contain;transition:opacity 0.3s ease;box-shadow:0 8px 28px rgba(28,28,26,0.12);}
 .gallery-arrow{position:absolute;top:50%;transform:translateY(-50%);background:rgba(245,243,239,0.85);border:none;width:44px;height:44px;border-radius:50%;font-family:'Space Grotesk',sans-serif;font-size:22px;color:var(--ink);cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:5;transition:background 0.2s;}
 .gallery-arrow:hover{background:rgba(245,243,239,1)}
 .gallery-arrow-left{left:16px}
@@ -105,7 +108,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content
     position:static;background:none;border:none;padding:2px 0 0;
     text-align:center;white-space:normal;
   }
-  .slide-icon-wrap{width:200px;height:200px;}
+  .slide-icon-wrap{width:100%;max-width:100%;height:260px;}
 }
 </style>
 </head>
@@ -256,6 +259,16 @@ const slideYear = document.getElementById('slideYear');
 const slideshowEl = document.getElementById('slideshow');
 let slideIndex = 0;
 
+function renderSlideMedia(container, p){
+  container.innerHTML = '';
+  container.style.background = '';
+  const img = document.createElement('img');
+  img.src = `images/${p.id}/1.jpg`;
+  img.alt = p.title || p.label;
+  img.addEventListener('error', ()=>{ renderMedia(container, p, false); });
+  container.appendChild(img);
+}
+
 function showSlide(i){
   const p = moreWork[i];
   const wrap = slideIcon.parentElement;
@@ -264,7 +277,7 @@ function showSlide(i){
   slideYear.classList.add('slide-fade');
   setTimeout(()=>{
     slideIcon.style.color = p.color;
-    renderMedia(slideIcon, p, false);
+    renderSlideMedia(slideIcon, p);
     slideLabel.textContent = p.label;
     slideYear.textContent = p.year;
     wrap.classList.remove('slide-fade');
