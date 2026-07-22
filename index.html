@@ -244,7 +244,7 @@ favorites.forEach((p,i) => {
   const el = document.createElement('div');
   el.className = 'object';
   const w = Math.round(p.w*scale), h = Math.round(p.h*scale);
-  el.style.cssText = `left:${pos.x}%;top:${pos.y}%;width:${w}px;height:${h}px;`;
+  el.style.cssText = `left:${pos.x}%;top:${pos.y}%;width:${w}px;height:${h}px;transform:translateX(-50%);`;
   el.dataset.rotate = pos.r;
   el.innerHTML = `<span class="obj-label">${p.label}</span><div class="obj-icon-wrap" style="transform:rotate(${pos.r}deg)"><div class="obj-placeholder" style="color:${p.color}"></div></div><img class="obj-photo" src="images/${p.id}/hero/1.jpg" alt="">`;
   renderMedia(el.querySelector('.obj-placeholder'), p, false);
