@@ -245,9 +245,13 @@ favorites.forEach((p,i) => {
   const w = Math.round(p.w*scale), h = Math.round(p.h*scale);
   el.style.cssText = `left:${pos.x}%;top:${pos.y}%;width:${w}px;height:${h}px;`;
   el.dataset.rotate = pos.r;
-  el.innerHTML = `<span class="obj-label">${p.label}</span><div class="obj-icon-wrap" style="transform:rotate(${pos.r}deg)"><div class="obj-placeholder" style="color:${p.color}"></div></div><img class="obj-photo" src="images/${p.id}/1.jpg" alt="">`;
+  el.innerHTML = `<span class="obj-label">${p.label}</span><div class="obj-icon-wrap" style="transform:rotate(${pos.r}deg)"><div class="obj-placeholder" style="color:${p.color}"></div></div><img class="obj-photo" src="images/${p.id}/hero/1.jpg" alt="">`;
   renderMedia(el.querySelector('.obj-placeholder'), p, false);
-  el.querySelector('.obj-photo').addEventListener('error', function(){ this.remove(); });
+  el.querySelector('.obj-photo').addEventListener('error', function(){
+    if(this.dataset.fallback){ this.remove(); return; }
+    this.dataset.fallback = '1';
+    this.src = `images/${p.id}/1.jpg`;
+  });
   el.addEventListener('click',()=>openProject(p));
   canvas.appendChild(el);
   setTimeout(()=>el.classList.add('in'), 80*i);
@@ -315,15 +319,49 @@ document.getElementById('nextSlide').addEventListener('click', (e)=>{
   startSlideTimer();
 });
 
+function probeSlideImages(id, cb){
+  const found = [];
+  const maxTry = 20;
+  let i = 1;
+  function tryNext(){
+    if(i > maxTry){ cb(found); return; }
+    const img = new Image();
+    img.onload = ()=>{ found.push(`images/${id}/slideshow/${i}.jpg`); i++; tryNext(); };
+    img.onerror = ()=>{ cb(found); };
+    img.src = `images/${id}/slideshow/${i}.jpg`;
+  }
+  tryNext();
+}
+
+function shuffleNoAdjacentRepeats(arr){
+  // Fisher-Yates shuffle
+  for(let i = arr.length-1; i>0; i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  // fix up any adjacent slides that share the same project
+  for(let i = 1; i<arr.length; i++){
+    if(arr[i].p.id === arr[i-1].p.id){
+      for(let j = i+1; j<arr.length; j++){
+        if(arr[j].p.id !== arr[i-1].p.id && arr[j].p.id !== (arr[i+1] ? arr[i+1].p.id : null)){
+          [arr[i],arr[j]] = [arr[j],arr[i]];
+          break;
+        }
+      }
+    }
+  }
+  return arr;
+}
+
 function buildAllSlides(cb){
   if(moreWork.length===0){ cb([]); return; }
   const results = new Array(moreWork.length);
   let remaining = moreWork.length;
   moreWork.forEach((p, idx)=>{
-    probeGallery(p.id, (found)=>{
+    probeSlideImages(p.id, (found)=>{
       results[idx] = found.map(src => ({p, src}));
       remaining--;
-      if(remaining === 0) cb(results.flat());
+      if(remaining === 0) cb(shuffleNoAdjacentRepeats(results.flat()));
     });
   });
 }
