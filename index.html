@@ -354,10 +354,11 @@ function shuffleNoAdjacentRepeats(arr){
 }
 
 function buildAllSlides(cb){
-  if(moreWork.length===0){ cb([]); return; }
-  const results = new Array(moreWork.length);
-  let remaining = moreWork.length;
-  moreWork.forEach((p, idx)=>{
+  const allProjects = favorites.concat(moreWork);
+  if(allProjects.length===0){ cb([]); return; }
+  const results = new Array(allProjects.length);
+  let remaining = allProjects.length;
+  allProjects.forEach((p, idx)=>{
     probeSlideImages(p.id, (found)=>{
       results[idx] = found.map(src => ({p, src}));
       remaining--;
