@@ -32,7 +32,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content
 .object:hover .obj-label{opacity:1;transform:translateY(0)}
 .obj-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;transition:filter 0.35s,opacity 0.3s ease;filter:drop-shadow(0 6px 10px rgba(28,28,26,0.16));}
 .obj-placeholder svg{width:100%;height:100%;overflow:visible;opacity:0.85}
-.obj-placeholder img{width:100%;height:100%;object-fit:cover;border-radius:2px;display:block;}
+.obj-placeholder img{width:100%;height:100%;object-fit:contain;border-radius:0;display:block;}
 .obj-photo{position:absolute;top:50%;left:50%;width:230px;height:170px;transform:translate(-50%,-50%) scale(0.82);object-fit:contain;border-radius:6px;opacity:0;pointer-events:none;transition:opacity 0.35s ease,transform 0.35s ease;filter:drop-shadow(0 12px 22px rgba(28,28,26,0.35));}
 .object:hover .obj-photo{opacity:1;transform:translate(-50%,-50%) scale(1);}
 .object:hover .obj-placeholder{opacity:0;}
@@ -243,7 +243,7 @@ favorites.forEach((p,i) => {
   const pos = positions[i];
   const el = document.createElement('div');
   el.className = 'object';
-  const w = Math.round(p.w*scale), h = Math.round(p.h*scale);
+  const w = Math.round(150*scale), h = Math.round(170*scale);
   el.style.cssText = `left:${pos.x}%;top:${pos.y}%;width:${w}px;height:${h}px;transform:translateX(-50%);`;
   el.dataset.rotate = pos.r;
   el.innerHTML = `<span class="obj-label">${p.label}</span><div class="obj-icon-wrap" style="transform:rotate(${pos.r}deg)"><div class="obj-placeholder" style="color:${p.color}"></div></div><img class="obj-photo" src="images/${p.id}/hero/1.jpg" alt="">`;
